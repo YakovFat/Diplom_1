@@ -1,10 +1,10 @@
 import json
 from pprint import pprint
 from cla import User
-user = User('eshmargunov')
 
 # print(User(214895).id_groups())
 if __name__ == '__main__':
+    user = User('eshmargunov')
     print(user.mutual_friend_class())
 # print(user.mutual_friend_class())
 # final_list = []
