@@ -73,14 +73,14 @@ class User:
         if 'error' in user_friends and 'error_code' in user_friends['error'] and user_friends['error'][
             'error_code'] == 7:
             print('error_code = 7')
-            ier = [0]
-            return ier
+            arr = [0]
+            return arr
         elif 'error' in user_friends and 'error_code' in user_friends['error'] and user_friends['error'][
             'error_code'] == 6:
             print('error_code = 6')
             time.sleep(2)
-            ier = [0]
-            return ier
+            arr = [0]
+            return arr
         else:
             for i in user_friends['response']['items']:
                 id_groups.append(i['id'])
