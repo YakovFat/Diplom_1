@@ -74,20 +74,19 @@ class User:
             'error_code'] == 7:
             print('error_code = 7')
             arr = [0]
-            return arr
+            return 'error_code = 7'
         elif 'error' in user_friends and 'error_code' in user_friends['error'] and user_friends['error'][
             'error_code'] == 6:
             print('error_code = 6')
-            time.sleep(2)
+            # time.sleep(2)
             arr = [0]
-            return arr
+            return 'error_code = 6'
         else:
             for i in user_friends['response']['items']:
                 id_groups.append(i['id'])
             return id_groups
 
     def mutual_friend_class(self):
-        time.sleep(1)
         id_groups_user = User(self.name_user).id_groups()  # id моих групп
         print("id_groups_user", id_groups_user)  # НЕ НУЖНО
         friends_user = User(self.name_user).get_friends()['response']['items']  # id друзей
@@ -96,9 +95,15 @@ class User:
             print('i', i)  # НЕ НУЖНО
             id_groups_friend = []
             print('User(i).id_groups()', User(i).id_groups())  # НЕ НУЖНО
-            id_groups_friend.append(User(i).id_groups())
-            print('id_groups_friend', id_groups_friend)  # НЕ НУЖНО
-            id_groups_user = list(set(id_groups_user) - set(id_groups_friend[0]))
-            print('id_groups_user', id_groups_user)  # НЕ НУЖНО
-            # id_groups_user = id_groups_user_1
+            if User(i).id_groups() == 'error_code = 7':
+                print('123')
+            if User(i).id_groups() == 'error_code = 6':
+                time.sleep(2)
+                friends_user.append(i)
+            else:
+                id_groups_friend.append(User(i).id_groups())
+                print('id_groups_friend', id_groups_friend)  # НЕ НУЖНО
+                id_groups_user = list(set(id_groups_user) - set(id_groups_friend[0]))
+                print('id_groups_user', id_groups_user)  # НЕ НУЖНО
+                # id_groups_user = id_groups_user_1
         return id_groups_user
