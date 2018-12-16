@@ -99,7 +99,7 @@ class User:
                 friends_user.append(i)
             else:
                 id_groups_friend.append(User(i).id_groups())
-                print('id_groups_friend', id_groups_friend)  # НЕ НУЖНО
+                # print('id_groups_friend', id_groups_friend)  # НЕ НУЖНО
                 id_groups_user = list(set(id_groups_user) - set(id_groups_friend[0]))
                 print('id_groups_user', id_groups_user)  # НЕ НУЖНО
                 # id_groups_user = id_groups_user_1

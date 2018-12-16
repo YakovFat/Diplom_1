@@ -4,7 +4,8 @@ from cla import User
 user = User('eshmargunov')
 
 # print(User(214895).id_groups())
-print(user.mutual_friend_class())
+if __name__ == '__main__':
+    print(user.mutual_friend_class())
 # print(user.mutual_friend_class())
 # final_list = []
 # print(user.id_unique_groups())
