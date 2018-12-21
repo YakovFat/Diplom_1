@@ -76,7 +76,7 @@ class User:
                 id_groups.append(i['id'])
             return id_groups
 
-    def mutual(self):
+    def id_unique_groups(self):
         id_groups_user = User(self.user_id).id_groups()
         friends_user = User(self.user_id).get_friends()['response']['items']
         for i in friends_user:
@@ -87,12 +87,13 @@ class User:
                 print('Пользователь id{} закрыл группы'.format(i))
             else:
                 id_groups_user = list(set(id_groups_user) - set(friend))
+                print(id_groups_user)
         return id_groups_user
 
-    def id_unique_groups(self):
+    def unique_groups(self):
         try:
             final_list = []
-            unique_groups = User(self.user_id).mutual()
+            unique_groups = User(self.user_id).id_unique_groups()
             for a in unique_groups:
                 info = User(self.user_id).groups_get_by_id(a)
                 if 'error' in info:
@@ -111,6 +112,50 @@ class User:
                             }
                             final_list.append(json_group)
             with open("unique_groups.json", "w", encoding='utf_8_sig') as datafile:
+                json.dump(final_list, datafile, ensure_ascii=False, indent=4)
+            pprint(final_list)
+        except KeyError:
+            pass
+
+    def id_mutual_groups(self):
+        n = 150
+        id_groups_user = User(self.user_id).id_groups()
+        friends_user = User(self.user_id).get_friends()['response']['items']
+        id_groups_user_m = []
+        for i in friends_user[:n]:
+            friend = User(i).id_groups()
+            if friend == 'error_code = 6':
+                friends_user.append(i)
+            elif friend == 'error_code = 7':
+                print('Пользователь id{} закрыл группы'.format(i))
+            else:
+                id_groups_user_u = list(set(id_groups_user) & set(friend))
+                if len(id_groups_user_u) != 0 and id_groups_user_u[0] not in id_groups_user_m:
+                    id_groups_user_m.append(id_groups_user_u[0])
+        return id_groups_user_m
+
+    def mutual_groups(self):
+        try:
+            final_list = []
+            mutual_groups = User(self.user_id).id_mutual_groups()
+            for a in mutual_groups:
+                info = User(self.user_id).groups_get_by_id(a)
+                if 'error' in info:
+                    mutual_groups.append(a)
+                    time.sleep(1)
+                else:
+                    for i in info['response']:
+                        if 'error' in i:
+                            mutual_groups.append(a)
+                            time.sleep(1)
+                        else:
+                            json_group = {
+                                'name': i['name'],
+                                'gid': i['id'],
+                                'members_count': i['members_count']
+                            }
+                            final_list.append(json_group)
+            with open("mutual_groups.json", "w", encoding='utf_8_sig') as datafile:
                 json.dump(final_list, datafile, ensure_ascii=False, indent=4)
             pprint(final_list)
         except KeyError:
