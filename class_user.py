@@ -5,10 +5,10 @@ import json
 from pprint import pprint
 
 print('Введите токен:')
-token = input()
+TOKEN = input()
 
-default_params = {
-    'access_token': token,
+DEFAULT_PARAMS = {
+    'access_token': TOKEN,
     'v': '5.92'
 }
 https = 'https://api.vk.com/method/'
@@ -21,7 +21,7 @@ class User:
         if str(user_id).isdigit():
             self.user_id = user_id
         else:
-            params = default_params.copy()
+            params = DEFAULT_PARAMS.copy()
             params.update({'user_ids': user_id})
             response = requests.get(https + 'users.get', params)
             user_data = response.json()
@@ -31,14 +31,14 @@ class User:
                 sys.exit('Данного пользователя не существует')
 
     def get_groups(self):
-        params = default_params.copy()
+        params = DEFAULT_PARAMS.copy()
         params.update({'user_id': self.user_id, 'extended': 1, 'fields': 'members_count'})
         response = requests.get(https + 'groups.get', params)
         print('.')
         return response.json()
 
     def get_friends(self):
-        params = default_params.copy()
+        params = DEFAULT_PARAMS.copy()
         params.update({'user_id': self.user_id})
 
         response = requests.get(https + 'friends.get', params)
@@ -46,7 +46,7 @@ class User:
         return response.json()
 
     def groups_get_by_id(self, group_id):
-        params = default_params.copy()
+        params = DEFAULT_PARAMS.copy()
         params.update({'group_ids': group_id, 'fields': 'members_count'})
 
         response = requests.get(https + 'groups.getById', params)
@@ -87,7 +87,6 @@ class User:
                 print('Пользователь id{} закрыл группы'.format(i))
             else:
                 id_groups_user = list(set(id_groups_user) - set(friend))
-                print(id_groups_user)
         return id_groups_user
 
     def unique_groups(self):
@@ -112,50 +111,6 @@ class User:
                             }
                             final_list.append(json_group)
             with open("unique_groups.json", "w", encoding='utf_8_sig') as datafile:
-                json.dump(final_list, datafile, ensure_ascii=False, indent=4)
-            pprint(final_list)
-        except KeyError:
-            pass
-
-    def id_mutual_groups(self):
-        n = 150
-        id_groups_user = User(self.user_id).id_groups()
-        friends_user = User(self.user_id).get_friends()['response']['items']
-        id_groups_user_m = []
-        for i in friends_user[:n]:
-            friend = User(i).id_groups()
-            if friend == 'error_code = 6':
-                friends_user.append(i)
-            elif friend == 'error_code = 7':
-                print('Пользователь id{} закрыл группы'.format(i))
-            else:
-                id_groups_user_u = list(set(id_groups_user) & set(friend))
-                if len(id_groups_user_u) != 0 and id_groups_user_u[0] not in id_groups_user_m:
-                    id_groups_user_m.append(id_groups_user_u[0])
-        return id_groups_user_m
-
-    def mutual_groups(self):
-        try:
-            final_list = []
-            mutual_groups = User(self.user_id).id_mutual_groups()
-            for a in mutual_groups:
-                info = User(self.user_id).groups_get_by_id(a)
-                if 'error' in info:
-                    mutual_groups.append(a)
-                    time.sleep(1)
-                else:
-                    for i in info['response']:
-                        if 'error' in i:
-                            mutual_groups.append(a)
-                            time.sleep(1)
-                        else:
-                            json_group = {
-                                'name': i['name'],
-                                'gid': i['id'],
-                                'members_count': i['members_count']
-                            }
-                            final_list.append(json_group)
-            with open("mutual_groups.json", "w", encoding='utf_8_sig') as datafile:
                 json.dump(final_list, datafile, ensure_ascii=False, indent=4)
             pprint(final_list)
         except KeyError:
